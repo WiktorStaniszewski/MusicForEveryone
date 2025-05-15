@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace MusicForEveryone.Controllers;
+namespace EShopServices.Controllers;
 
 [ApiController]
 [Route("[controller]")]
