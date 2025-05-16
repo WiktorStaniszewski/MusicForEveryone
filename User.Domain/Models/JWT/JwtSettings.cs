@@ -1,4 +1,4 @@
-﻿namespace User.Domain
+﻿namespace User.Domain.Models.JWT
 {
     public class JwtSettings
     {

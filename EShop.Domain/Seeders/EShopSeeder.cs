@@ -17,7 +17,7 @@ public class EShopSeeder(DataContext context) : IEShopSeeder
             };
 
             context.Products.AddRange(students);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
     }
 }

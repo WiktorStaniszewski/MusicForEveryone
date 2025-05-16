@@ -1,25 +1,42 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using User.Domain;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using User.Application.Services;
+using User.Domain.Exceptions;
+using User.Domain.Models.Requests;
 
 namespace UserService.Controllers;
 
+[Route("api/[controller]")]
 [ApiController]
-[Route("[controller]")]
 public class LoginController : ControllerBase
 {
+    protected ILoginService _loginService;
+
+    public LoginController(ILoginService loginService)
+    {
+        _loginService = loginService;
+    }
+
+
     [HttpPost]
     public IActionResult Login([FromBody] LoginRequest request)
     {
-        // Here you would normally validate username and password against a database
-        if (request.Username == "admin" && request.Password == "password")
+        try
         {
-            // Login successful
-            return Ok("Login successful!");
+            var token = _loginService.Login(request.Username, request.Password);
+            return Ok(new { token });
         }
-        else
+        catch (InvalidCredentialsException)
         {
-            // Login failed
-            return Unauthorized("Invalid username or password.");
+            return Unauthorized();
         }
+    }
+
+    [HttpGet]
+    [Authorize]
+    [Authorize(Policy = "AdminOnly")]
+    public IActionResult AdminPage()
+    {
+        return Ok();
     }
 }

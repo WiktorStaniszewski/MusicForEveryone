@@ -26,7 +26,12 @@ namespace EShop.Domain.Repositories
 
         public async Task<Product> GetProductAsync(int id)
         {
-            return await _context.Products.Where(x => x.Id == id).FirstOrDefaultAsync();
+            var product = await _context.Products.Where(x => x.Id == id).FirstOrDefaultAsync();
+            if (product == null)
+            {
+                throw new InvalidOperationException($"Product with ID {id} not found.");
+            }
+            return product;
         }
 
         public async Task<Product> UpdateProductAsync(Product product)

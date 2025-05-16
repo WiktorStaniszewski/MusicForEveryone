@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace User.Application.Services;
 
-class ILoginService
+public interface ILoginService
 {
+    string Login(string username, string password);
 }
