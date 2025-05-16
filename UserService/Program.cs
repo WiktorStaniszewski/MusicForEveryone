@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Cryptography;
 using System.Text;
 using User.Application.Services;
 using User.Domain.Models.JWT;
@@ -62,6 +63,8 @@ public class Program
         {
             options.AddPolicy("AdminOnly", policy =>
                 policy.RequireRole("Administrator"));
+            options.AddPolicy("EmployeeOnly", policy =>
+                policy.RequireRole("Employee"));
         });
 
         builder.Services.AddAuthentication(options =>
@@ -71,6 +74,10 @@ public class Program
         })
         .AddJwtBearer(options =>
         {
+            var rsa = RSA.Create();
+            rsa.ImportFromPem(File.ReadAllText("../data/public.key"));// Za³aduj klucz publiczny RSA
+            var publicKey = new RsaSecurityKey(rsa);
+
             var jwtConfig = jwtSettings.Get<JwtSettings>();
             options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -80,7 +87,15 @@ public class Program
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtConfig.Issuer,
                 ValidAudience = jwtConfig.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Key))
+                IssuerSigningKey = publicKey
+            };
+            options.Events = new JwtBearerEvents
+            {
+                OnAuthenticationFailed = context =>
+                {
+                    Console.WriteLine("Authentication failed: " + context.Exception.Message);
+                    return Task.CompletedTask;
+                }
             };
         });
 
