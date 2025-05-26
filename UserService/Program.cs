@@ -74,10 +74,6 @@ public class Program
         })
         .AddJwtBearer(options =>
         {
-            var rsa = RSA.Create();
-            rsa.ImportFromPem(File.ReadAllText("../data/public.key"));// Za³aduj klucz publiczny RSA
-            var publicKey = new RsaSecurityKey(rsa);
-
             var jwtConfig = jwtSettings.Get<JwtSettings>();
             options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -87,7 +83,7 @@ public class Program
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtConfig.Issuer,
                 ValidAudience = jwtConfig.Audience,
-                IssuerSigningKey = publicKey
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Key))
             };
             options.Events = new JwtBearerEvents
             {
