@@ -76,7 +76,7 @@ public class Program
         .AddJwtBearer(options =>
         {
             var rsa = RSA.Create();
-            rsa.ImportFromPem(File.ReadAllText("../MusicForEveryone/public.key"));
+            rsa.ImportFromPem(File.ReadAllText("./data/public.key"));
             var publicKey = new RsaSecurityKey(rsa);
 
             options.TokenValidationParameters = new TokenValidationParameters
