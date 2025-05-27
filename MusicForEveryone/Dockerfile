@@ -13,8 +13,6 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["MusicForEveryone/EShopService.csproj", "MusicForEveryone/"]
-COPY ["EShop.Application/EShop.Application.csproj", "EShop.Application/"]
-COPY ["EShop.Domain/EShop.Domain.csproj", "EShop.Domain/"]
 RUN dotnet restore "./MusicForEveryone/EShopService.csproj"
 COPY . .
 WORKDIR "/src/MusicForEveryone"

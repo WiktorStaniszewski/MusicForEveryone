@@ -58,7 +58,7 @@ public class Program
         // JWT configuration here
         var jwtSettings = builder.Configuration.GetSection("Jwt");
         builder.Services.Configure<JwtSettings>(jwtSettings);
-
+        // to akurat autoryzacja
         builder.Services.AddAuthorization(options =>
         {
             options.AddPolicy("AdminOnly", policy =>
@@ -66,7 +66,7 @@ public class Program
             options.AddPolicy("EmployeeOnly", policy =>
                 policy.RequireRole("Employee"));
         });
-
+        // JWT siê kontynuuje
         builder.Services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -74,6 +74,10 @@ public class Program
         })
         .AddJwtBearer(options =>
         {
+            var rsa = RSA.Create();
+            rsa.ImportFromPem(File.ReadAllText("../data/public.key"));
+            var publickey = new RsaSecurityKey(rsa);
+
             var jwtConfig = jwtSettings.Get<JwtSettings>();
             options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -83,7 +87,7 @@ public class Program
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtConfig.Issuer,
                 ValidAudience = jwtConfig.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Key))
+                IssuerSigningKey = publickey
             };
             options.Events = new JwtBearerEvents
             {

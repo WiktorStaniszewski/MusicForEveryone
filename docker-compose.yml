@@ -8,7 +8,7 @@ services:
       - CONNECTION_STRING=Server=${DB_HOST};Database=${DB_NAME};User Id=${DB_USER};Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True;
     build:
       context: .
-      dockerfile: MusicForEveryone/EShopService/Dockerfile
+      dockerfile: MusicForEveryone/Dockerfile
 
   userservice:
     image: ${DOCKER_REGISTRY-}userservice
@@ -18,7 +18,7 @@ services:
       - CONNECTION_STRING=Server=${DB_HOST};Database=${DB_NAME};User Id=${DB_USER};Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True;
     build:
       context: .
-      dockerfile: MusicForEveryone/UserService/Dockerfile
+      dockerfile: UserService/Dockerfile
       
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest

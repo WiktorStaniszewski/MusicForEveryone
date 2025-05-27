@@ -60,6 +60,14 @@ public class Program
             });
         });
 
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy =>
+                policy.RequireRole("Administrator"));
+            options.AddPolicy("EmployeeOnly", 
+                policy => policy.RequireRole("Employee"));
+        });
+
         builder.Services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -68,7 +76,7 @@ public class Program
         .AddJwtBearer(options =>
         {
             var rsa = RSA.Create();
-            rsa.ImportFromPem(File.ReadAllText("../public.key"));
+            rsa.ImportFromPem(File.ReadAllText("../MusicForEveryone/public.key"));
             var publicKey = new RsaSecurityKey(rsa);
 
             options.TokenValidationParameters = new TokenValidationParameters
