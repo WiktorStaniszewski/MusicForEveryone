@@ -5,33 +5,32 @@ using System.Security.Claims;
 using User.Application.Services;
 using User.Domain.Models.Response;
 
-namespace UserService.Controllers
+namespace UserService.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class UserController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
+    private IUserService _userService;
+    public UserController(IUserService userService)
     {
-        private IUserService _userService;
-        public UserController(IUserService userService)
+        _userService = userService;
+    }
+
+    [HttpGet]
+    [Authorize]
+    public ActionResult<UserResponseDTO> GetUserData()
+    {
+        int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        try
         {
-            _userService = userService;
+            var userDto = _userService.GetUser(userId);
+            return Ok(userDto);
+        }
+        catch
+        {
+            return NotFound();
         }
 
-        [HttpGet]
-        [Authorize]
-        public ActionResult<UserResponseDTO> GetUserData()
-        {
-            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-            try
-            {
-                var userDto = _userService.GetUser(userId);
-                return Ok(userDto);
-            }
-            catch
-            {
-                return NotFound();
-            }
-
-        }
     }
 }

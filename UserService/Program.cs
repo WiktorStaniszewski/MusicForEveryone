@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Cryptography;
 using System.Text;
 using User.Application.Services;
 using User.Domain.Models.JWT;
+using User.Domain.Profiles;
 
 namespace UserService;
 
@@ -54,6 +56,14 @@ public class Program
         builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 
+        // User Service
+        builder.Services.AddScoped<IUserService, User.Application.Services.UserService>();
+        builder.Services.AddDbContext<DbContext>(x => x.UseInMemoryDatabase("TestDb"), ServiceLifetime.Transient);
+
+
+        // Automapper   
+        builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 
         // JWT configuration here
         var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -75,7 +85,7 @@ public class Program
         .AddJwtBearer(options =>
         {
             var rsa = RSA.Create();
-            rsa.ImportFromPem(File.ReadAllText("../data/public.key"));
+            rsa.ImportFromPem(File.ReadAllText("../public.key"));
             var publickey = new RsaSecurityKey(rsa);
 
             var jwtConfig = jwtSettings.Get<JwtSettings>();
