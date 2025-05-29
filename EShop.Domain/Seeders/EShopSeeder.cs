@@ -13,7 +13,8 @@ public class EShopSeeder(DataContext context) : IEShopSeeder
             {
                 new Product { Name = "Cobi", Ean = "1234" },
                 new Product { Name = "Duplo", Ean = "431" },
-                new Product { Name = "Lego", Ean = "12212" }
+                new Product { Name = "Lego", Ean = "12212" },
+                new Product { Name = "Minecraft", Ean = "98982"}
             };
 
             context.Products.AddRange(students);
