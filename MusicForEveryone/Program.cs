@@ -65,7 +65,7 @@ public class Program
             options.AddPolicy("AdminOnly", policy =>
                 policy.RequireRole("Administrator"));
             options.AddPolicy("EmployeeOnly", 
-                policy => policy.RequireRole("Employee"));
+                policy => policy.RequireRole("Employee", "Administrator"));
         });
 
         builder.Services.AddAuthentication(options =>
@@ -86,7 +86,7 @@ public class Program
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = "EShopNetCourse",
-                ValidAudience = "Eshop",
+                ValidAudience = "EShop", //ten moment kiedy Eshop zamiast EShop (T_T)
                 IssuerSigningKey = publicKey
             };
         });

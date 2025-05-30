@@ -18,6 +18,7 @@ public class ProductController : ControllerBase
         _productService = productService;
     }
 
+    // wyjmij wszystkie produkty
     // GET: api/<ProductController>
     [HttpGet]
     public async Task<ActionResult> Get()
@@ -26,6 +27,7 @@ public class ProductController : ControllerBase
         return Ok(result);
     }
 
+    //wyjmij produkt o danym {id}
     // GET api/<ProductController>/5
     [HttpGet("{id}")]
     public async Task<ActionResult> Get(int id)
@@ -39,6 +41,7 @@ public class ProductController : ControllerBase
         return Ok(result);
     }
 
+    // dodaj nowy produkt
     // POST api/<ProductController>
     [Authorize(Policy = "EmployeeOnly")]
     [HttpPost]
@@ -49,16 +52,35 @@ public class ProductController : ControllerBase
         return Ok(result);
     }
 
+    // zaktualizuj produkt lub utwórz go, jeśli nie istnieje
+    // do naprawienia - zawsze tworzy nowy element zamiast aktualizować poprzedni
     // PUT api/<ProductController>/5
     [Authorize(Policy = "EmployeeOnly")]
     [HttpPut("{id}")]
     public async Task<ActionResult> Put(int id, [FromBody] Product product)
     {
-        var result = await _productService.UpdateAsync(product);
-
-        return Ok(result);
+        if (product == null)
+        {
+            return BadRequest("null product");
+        }
+        //product.Id = id;
+        try
+        {
+            var current_product = await _productService.GetAsync(id);
+            current_product = product;
+            current_product.Id = id;
+            var result = await _productService.UpdateAsync(current_product);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            product.Id = id;
+            var result = await _productService.AddAsync(product);
+            return Ok(result);
+        }
     }
 
+    // usuń produkt - to znaczy, ustaw deleted = true
     // DELETE api/<ProductController>/5
     [Authorize(Policy = "EmployeeOnly")]
     [HttpDelete("{id}")]
@@ -70,13 +92,15 @@ public class ProductController : ControllerBase
 
         return Ok(result);
     }
-
-    // PATCH api/<ProductController>
+    
+    //zaktualizuj produkt
     [Authorize(Policy = "EmployeeOnly")]
-    [HttpPatch]
-    public ActionResult Add([FromBody] Product product)
+    [HttpPatch("{id}")]
+    public async Task<ActionResult> PatchName([FromBody] string name, int id)
     {
-        var result = _productService.Add(product);
+        var product = await _productService.GetAsync(id);
+        product.Name = name;
+        var result = await _productService.UpdateAsync(product);
 
         return Ok(result);
     }

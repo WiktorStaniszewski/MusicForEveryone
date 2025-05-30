@@ -74,7 +74,7 @@ public class Program
             options.AddPolicy("AdminOnly", policy =>
                 policy.RequireRole("Administrator"));
             options.AddPolicy("EmployeeOnly", policy =>
-                policy.RequireRole("Employee"));
+                policy.RequireRole("Employee", "Administrator"));
         });
         // JWT siê kontynuuje
         builder.Services.AddAuthentication(options =>
