@@ -3,19 +3,19 @@ using User.Domain.Models.Response;
 
 namespace User.Application.Services;
 
-public class UserService : IUserService
+public class UserServices : IUserService
 {
     private readonly IMapper _mapper;
 
-    public UserService(IMapper mapper)
+    public UserServices(IMapper mapper)
     {
         _mapper = mapper;
     }
 
-    public UserResponseDTO GetUser(int userId)
+    public async Task<UserResponseDTO> GetUserAsync(int userId)
     {
         //var user = _db.Users.Find(userId);
-        var user = new User.Domain.Models.Entities.User()
+        var user = new Domain.Models.Entities.JustUser()
         {
             Username = "aaa",
             PasswordHash = "asas",
@@ -26,6 +26,7 @@ public class UserService : IUserService
         if (user == null)
             throw new Exception("Record not found");
 
+        // Simulating async operation
         return _mapper.Map<UserResponseDTO>(user);
     }
 }

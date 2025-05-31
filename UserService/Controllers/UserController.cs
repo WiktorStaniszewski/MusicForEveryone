@@ -18,13 +18,13 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize]
-    public ActionResult<UserResponseDTO> GetUserData()
+    [Authorize(Policy = "EmployeeOnly")]
+    public async Task <ActionResult> GetUserData()
     {
         int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
         try
         {
-            var userDto = _userService.GetUser(userId);
+            var userDto = await _userService.GetUserAsync(userId);
             return Ok(userDto);
         }
         catch

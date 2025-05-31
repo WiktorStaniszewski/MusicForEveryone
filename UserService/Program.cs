@@ -7,6 +7,7 @@ using System.Text;
 using User.Application.Services;
 using User.Domain.Models.JWT;
 using User.Domain.Profiles;
+using User.Domain.Security;
 
 namespace UserService;
 
@@ -51,13 +52,16 @@ public class Program
               }
             });
         });
-        // Register LoginService and JwtTokenService
+        // Register LoginService, RegisterService and JwtTokenService
         builder.Services.AddScoped<ILoginService, LoginService>();
         builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+        builder.Services.AddScoped<IRegisterService, RegisterService>();
 
+        // Password Hashing Service
+        builder.Services.AddScoped<IPasswordHash, PasswordHash>();
 
         // User Service
-        builder.Services.AddScoped<IUserService, User.Application.Services.UserService>();
+        builder.Services.AddScoped<IUserService, UserServices>();
         builder.Services.AddDbContext<DbContext>(x => x.UseInMemoryDatabase("TestDb"), ServiceLifetime.Transient);
 
 

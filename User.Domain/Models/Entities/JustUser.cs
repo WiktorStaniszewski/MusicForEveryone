@@ -2,7 +2,7 @@
 
 namespace User.Domain.Models.Entities;
 
-public class User
+public class JustUser
 {
     [Key]
     public int Id { get; set; }

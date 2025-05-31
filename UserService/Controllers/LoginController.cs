@@ -11,14 +11,18 @@ namespace UserService.Controllers;
 public class LoginController : ControllerBase
 {
     protected ILoginService _loginService;
+    protected IRegisterService _registerService;
+    protected IUserService _userService;
 
-    public LoginController(ILoginService loginService)
+    public LoginController(ILoginService loginService, IRegisterService registerService, IUserService userService)
     {
+        _registerService = registerService;
         _loginService = loginService;
+        _userService = userService;
     }
 
 
-    [HttpPost]
+    [HttpPost("Login")]
     public IActionResult Login([FromBody] LoginRequest request)
     {
         try
@@ -32,11 +36,35 @@ public class LoginController : ControllerBase
         }
     }
 
-    [HttpGet]
-    [Authorize]
-    [Authorize(Policy = "AdminOnly")]
-    public IActionResult AdminPage()
+    [HttpPost("Register")]
+    public IActionResult Register([FromBody] RegisterRequest request)
     {
-        return Ok();
+        try
+        {
+            var token = _registerService.RegisterClient(request.Username, request.Email, request.Password);
+            return Ok(new { token });
+        }
+        catch (UserExistsExeption)
+        {
+            return Conflict("User already exists in the system.");
+        }
+        catch (InvalidCredentialsException)
+        {
+            return BadRequest("Username and password cannot be empty.");
+        }
+    }
+    [Authorize(Policy = "EmployeeOnly")]
+    [HttpGet]
+    public async Task<IActionResult> Get(int id)
+    {
+        try
+        {
+            var result = await _userService.GetUserAsync(id);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }
