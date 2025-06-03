@@ -25,6 +25,12 @@ namespace EShop.Application.Service
             return result;
         }
 
+        public async Task<List<Product>> GetByNameAsync(string input)
+        {
+            var result = await _repository.GetAllProductsByNameAsync(input);
+            return result;
+        }
+
         public async Task<Product> Update(Product product)
         {
             var result = await _repository.UpdateProductAsync(product);

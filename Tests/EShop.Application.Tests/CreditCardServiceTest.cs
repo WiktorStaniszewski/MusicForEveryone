@@ -1,8 +1,8 @@
-using Eshop.Domain.Exceptions.CreditCard;
 using EShop.Application.Service;
+using Eshop.Domain.Exceptions.CreditCard;
 
+namespace EShop.Application.Tests;
 
-namespace EShop.Domain.Tests;
 public class CreditCardServiceTest
 {
     [Fact]

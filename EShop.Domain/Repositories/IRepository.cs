@@ -9,7 +9,14 @@ namespace EShop.Domain.Repositories
         Task<Product> AddProductAsync(Product product);
         Task<Product> UpdateProductAsync(Product user);
         Task<List<Product>> GetAllProductAsync();
+        Task<List<Product>> GetAllProductsByNameAsync(string input);
         #endregion
 
+
+        #region Category
+        Task<Category> GetCategoryAsync(int id);
+        Task<Category> AddCategoryAsync(Category category);
+        Task<List<Category>> GetAllCategoryAsync();
+        #endregion
     }
 }

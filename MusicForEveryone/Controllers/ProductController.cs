@@ -19,11 +19,18 @@ public class ProductController : ControllerBase
     }
 
     // wyjmij wszystkie produkty
-    // GET: api/<ProductController>
-    [HttpGet]
+    // GET: api/<ProductController>/getAllProducts
+    [HttpGet("getAllProducts")]
     public async Task<ActionResult> Get()
     {
         var result = await _productService.GetAllAsync();
+        return Ok(result);
+    }
+
+    [HttpGet("getAllProductsByName")]
+    public async Task<ActionResult> GetByName(string input)
+    {
+        var result = await _productService.GetByNameAsync(input);
         return Ok(result);
     }
 
@@ -44,7 +51,7 @@ public class ProductController : ControllerBase
     // dodaj nowy produkt
     // POST api/<ProductController>
     [Authorize(Policy = "EmployeeOnly")]
-    [HttpPost]
+    [HttpPost("addNewProduct")]
     public async Task<ActionResult> Post([FromBody] Product product)
     {
         var result = await _productService.AddAsync(product);
