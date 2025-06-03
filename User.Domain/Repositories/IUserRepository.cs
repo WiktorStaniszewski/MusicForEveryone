@@ -9,6 +9,7 @@ public interface IUserRepository
     Task<JustUser> DeleteUserAsync(JustUser user);
     Task<JustUser> GetUserByUsernameAsync(string username);
     Task<JustUser> GetUserByEmailAsync(string email);
-    // Task<IEnumerable<User>> GetAllUsersAsync();
-    Task UpdateUserAsync(JustUser user);
+    Task<JustUser> GetUserByIdAsync(int id);
+    Task<List<JustUser>> GetAllUsersAsync();
+    Task<JustUser> UpdateUserAsync(JustUser user);
 }

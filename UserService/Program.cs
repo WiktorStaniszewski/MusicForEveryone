@@ -8,6 +8,7 @@ using User.Application.Services;
 using User.Domain.Models.JWT;
 using User.Domain.Profiles;
 using User.Domain.Security;
+using User.Domain.Repositories;
 
 namespace UserService;
 
@@ -62,8 +63,10 @@ public class Program
 
         // User Service
         builder.Services.AddScoped<IUserService, UserServices>();
-        builder.Services.AddDbContext<DbContext>(x => x.UseInMemoryDatabase("TestDb"), ServiceLifetime.Transient);
 
+        // Repositories
+        builder.Services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestDb"), ServiceLifetime.Transient);
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
 
         // Automapper   
         builder.Services.AddAutoMapper(typeof(MappingProfile));

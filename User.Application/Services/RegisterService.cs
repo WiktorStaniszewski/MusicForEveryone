@@ -1,6 +1,7 @@
 ﻿using User.Domain.Exceptions;
 using User.Domain.Models.Entities;
 using User.Domain.Security;
+using User.Domain.Repositories;
 
 namespace User.Application.Services;
 
@@ -8,16 +9,25 @@ public class RegisterService : IRegisterService
 {
     protected IJwtTokenService _jwtTokenService;
     protected IPasswordHash _passwordHash;
+    protected IUserRepository _userRepository;
 
-    public RegisterService(IJwtTokenService jwtTokenService, IPasswordHash passwordHash)
+    public RegisterService(IJwtTokenService jwtTokenService, IPasswordHash passwordHash, IUserRepository userRepository)
     {
         _jwtTokenService = jwtTokenService;
         _passwordHash = passwordHash;
+        _userRepository = userRepository;
     }
 
     public async Task<JustUser> RegisterClient(string username, string email, string password)
     {
-        if (username == "exists") // Simulating an existing user for demonstration purposes
+        var existingUser = await _userRepository.GetUserByUsernameAsync(username);
+        var existingByEmail = await _userRepository.GetUserByEmailAsync(email);
+        
+        if (existingByEmail != null)
+        {
+            throw new UserExistsExeption("Email already in use. Please login.");
+        }
+        if (existingUser != null)
         {
             throw new UserExistsExeption();
         }
@@ -38,7 +48,7 @@ public class RegisterService : IRegisterService
             IsActive = true
         };
 
-        // await _userRepository.AddUserAsync(newUser); <-- later, subsequent to creation of UserRepository
+        await _userRepository.AddUserAsync(newUser); 
         return newUser;
 
     }

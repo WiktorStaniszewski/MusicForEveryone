@@ -44,27 +44,13 @@ public class LoginController : ControllerBase
             var token = _registerService.RegisterClient(request.Username, request.Email, request.Password);
             return Ok(new { token });
         }
-        catch (UserExistsExeption)
+        catch (UserExistsExeption ex)
         {
-            return Conflict("User already exists in the system.");
+            return Conflict(new { message = ex.Message });
         }
         catch (InvalidCredentialsException)
         {
             return BadRequest("Username and password cannot be empty.");
-        }
-    }
-    [Authorize(Policy = "EmployeeOnly")]
-    [HttpGet]
-    public async Task<IActionResult> Get(int id)
-    {
-        try
-        {
-            var result = await _userService.GetUserAsync(id);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
         }
     }
 }

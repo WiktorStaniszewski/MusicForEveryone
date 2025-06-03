@@ -8,5 +8,6 @@ namespace User.Domain.Exceptions;
 
 public class UserExistsExeption : Exception
 {
+    public UserExistsExeption(string message) : base(message) { }
     public UserExistsExeption() : base("User already exists in the system.") { }
 }
