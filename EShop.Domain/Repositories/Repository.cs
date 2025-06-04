@@ -12,6 +12,7 @@ namespace EShop.Domain.Repositories
             _context = dataContext;
         }
 
+        //product
         public async Task<Product> AddProductAsync(Product product)
         {
             _context.Products.Add(product);
@@ -56,6 +57,7 @@ namespace EShop.Domain.Repositories
             return product;
         }
 
+        //category
         public async Task<Category> GetCategoryAsync(int id)
         {
             var category = await _context.Categories.Where(x => x.Id == id).FirstOrDefaultAsync();

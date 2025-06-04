@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EShop.Domain.Models.Response;
 
-public class ProductDTO
+public class ProductUpdateDTO
 {
     public int Id { get; set; }
 
@@ -16,4 +16,8 @@ public class ProductDTO
     public decimal Price { get; set; }
 
     public Category Category { get; set; } = default!;
+
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    public Guid UpdatedBy { get; set; }
 }

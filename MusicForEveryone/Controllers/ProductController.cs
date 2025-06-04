@@ -2,6 +2,7 @@
 using EShopDomain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -74,8 +75,12 @@ public class ProductController : ControllerBase
         try
         {
             var current_product = await _productService.GetAsync(id);
-            current_product = product;
-            current_product.Id = id;
+            current_product.Name = product.Name;
+            current_product.Price = product.Price;
+            current_product.Stock = product.Stock;
+            current_product.UpdatedBy = product.UpdatedBy;
+            current_product.UpdatedAt = product.UpdatedAt;
+
             var result = await _productService.UpdateAsync(current_product);
             return Ok(result);
         }
@@ -103,10 +108,14 @@ public class ProductController : ControllerBase
     //zaktualizuj produkt
     [Authorize(Policy = "EmployeeOnly")]
     [HttpPatch("{id}")]
-    public async Task<ActionResult> PatchName([FromBody] string name, int id)
+    public async Task<ActionResult> PatchName(string name, int stock, decimal price, int id)
     {
         var product = await _productService.GetAsync(id);
-        product.Name = name;
+        if (!name.IsNullOrEmpty()) product.Name = name;
+        product.Stock = stock;
+        product.Price = price;
+        product.UpdatedAt = new Product().UpdatedAt;
+        product.UpdatedBy = new Product().UpdatedBy;
         var result = await _productService.UpdateAsync(product);
 
         return Ok(result);
