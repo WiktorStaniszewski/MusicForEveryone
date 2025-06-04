@@ -18,6 +18,7 @@ public class UserServices : IUserService
         _userRepository = userRepository;
     }
 
+
     public async Task<UserResponseDTO> GetUserAsync(int id)
     {
         var user = await _userRepository.GetUserByIdAsync(id);
@@ -57,6 +58,11 @@ public class UserServices : IUserService
     public async Task<UserResponseDTO> UpdateUserAsync(UserResponseDTO userDto)
     {
         var user = _mapper.Map<JustUser>(userDto);
+        var existingUser = await _userRepository.GetUserByIdAsync(user.Id);
+        if (existingUser == null)
+        {
+            throw new UserDoesntExistsExeption("User with this ID does not exist.");
+        }
         var updatedUser = await _userRepository.UpdateUserAsync(user);
         return _mapper.Map<UserResponseDTO>(updatedUser);
     }

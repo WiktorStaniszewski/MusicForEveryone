@@ -27,12 +27,16 @@ public class LoginController : ControllerBase
     {
         try
         {
-            var token = _loginService.Login(request.Username, request.Password);
+            var token = _loginService.LoginAsync(request.Username, request.Password);
             return Ok(new { token });
         }
         catch (InvalidCredentialsException)
         {
             return Unauthorized(); 
+        }
+        catch (UserDoesntExistsExeption)
+        {
+            return Unauthorized();
         }
     }
 
