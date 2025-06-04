@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using User.Application.Services;
 using User.Domain.Exceptions;
+using User.Domain.Models.Entities;
 using User.Domain.Models.Response;
 
 namespace UserService.Controllers;
@@ -45,7 +46,7 @@ public class UserController : ControllerBase
         }
         catch (UserDoesntExistsExeption ex)
         {
-            return BadRequest(ex.Message);
+            return NotFound(ex.Message);
         }
     }
     [Authorize(Policy = "EmployeeOnly")]
@@ -59,9 +60,10 @@ public class UserController : ControllerBase
         }
         catch (UserDoesntExistsExeption ex)
         {
-            return BadRequest(ex.Message);
+            return NotFound(ex.Message);
         }
     }
+
     [Authorize(Policy = "EmployeeOnly")]
     [HttpGet("GetClientByUsername")]
     public async Task<IActionResult> GetUserByUsername(string username)
@@ -73,9 +75,10 @@ public class UserController : ControllerBase
         }
         catch (UserDoesntExistsExeption ex)
         {
-            return BadRequest(ex.Message);
+            return NotFound(ex.Message);
         }
     }
+
     [Authorize(Policy = "EmployeeOnly")]
     [HttpGet("GetAllUsers")]
     public async Task<IActionResult> GetAllUsers()
@@ -87,7 +90,40 @@ public class UserController : ControllerBase
         }
         catch (UserDoesntExistsExeption ex)
         {
-            return BadRequest(ex.Message);
+            return NotFound(ex.Message);
+        }
+    }
+
+    [Authorize(Policy = "EmployeeOnly")]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateUsers(int id, [FromBody] UserResponseDTO userResponseDTO)
+    {
+        if (id != userResponseDTO.Id)
+            return BadRequest("ID in route does not match ID in body.");
+
+        try
+        {
+            var result = await _userService.UpdateUserAsync(userResponseDTO); // Service expects DTO
+            return Ok(result);
+        }
+        catch (UserDoesntExistsExeption ex)
+        {
+            return NotFound(ex.Message); // more correct than BadRequest here
+        }
+    }
+
+    [Authorize(Policy = "EmployeeOnly")]
+    [HttpDelete("DeleteUsers")]
+    public async Task<IActionResult> DeleteUsers(int id)
+    {
+        try
+        {
+            var result = await _userService.DeleteUserAsync(id);
+            return Ok(result);
+        }
+        catch (UserDoesntExistsExeption ex)
+        {
+            return NotFound(ex.Message);
         }
     }
 }
