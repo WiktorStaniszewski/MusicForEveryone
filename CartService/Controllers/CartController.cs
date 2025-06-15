@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Cart.Application;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,6 +9,15 @@ namespace CartService.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
+        private readonly IEShopConnectService _EShopConnectService;
+
+        public CartController(IEShopConnectService eShopConnectService)
+        {
+            _EShopConnectService = eShopConnectService;
+        }
+
+
+
         // GET: api/<CartController>
         [HttpGet]
         public IEnumerable<string> Get()
@@ -23,9 +33,12 @@ namespace CartService.Controllers
         }
 
         // POST api/<CartController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("{id}")]
+        public async Task<ActionResult> Post(int id)
         {
+            //do naprawy, nie działa jeszcze
+            var newItem = await _EShopConnectService.GetProductAsync(id);
+            return Ok(newItem);
         }
 
         // PUT api/<CartController>/5

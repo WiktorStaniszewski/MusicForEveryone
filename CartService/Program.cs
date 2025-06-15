@@ -1,4 +1,6 @@
 
+using Cart.Application;
+
 namespace CartService
 {
     public class Program
@@ -10,6 +12,12 @@ namespace CartService
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddHttpClient<IEShopConnectService, EShopConnectService>(client =>
+            {
+                client.BaseAddress = new Uri("http://eshopservice:8081/");
+                client.DefaultRequestHeaders.ConnectionClose = true;
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
