@@ -1,5 +1,7 @@
 
 using Cart.Application;
+using Cart.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace CartService
 {
@@ -9,12 +11,16 @@ namespace CartService
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestDbCart"), ServiceLifetime.Transient);
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
+
             // Add services to the container.
+            builder.Services.AddScoped<ICartUsageService, CartUsageService>();
 
             builder.Services.AddControllers();
             builder.Services.AddHttpClient<IEShopConnectService, EShopConnectService>(client =>
             {
-                client.BaseAddress = new Uri("http://eshopservice:8081/");
+                client.BaseAddress = new Uri("http://eshopservice:8080/");
                 client.DefaultRequestHeaders.ConnectionClose = true;
             });
 
@@ -31,7 +37,7 @@ namespace CartService
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthorization();
 

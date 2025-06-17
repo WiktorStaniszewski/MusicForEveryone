@@ -1,4 +1,5 @@
-﻿using EShopDomain.Models;
+﻿using EShop.Domain.Exceptions.Products;
+using EShopDomain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace EShop.Domain.Repositories
@@ -45,7 +46,7 @@ namespace EShop.Domain.Repositories
             var product = await _context.Products.Where(x => x.Id == id).FirstOrDefaultAsync();
             if (product == null)
             {
-                throw new InvalidOperationException($"Product with ID {id} not found.");
+                throw new ProductNotFoundException($"Product with ID {id} not found.");
             }
             return product;
         }

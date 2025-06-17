@@ -20,7 +20,7 @@ public class EShopConnectService : IEShopConnectService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/Product/{id}");  //error "The response ended prematurely. (ResponseEnded)"
+            var response = await _httpClient.GetAsync($"api/Product/{id}");
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();

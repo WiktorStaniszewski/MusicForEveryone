@@ -40,13 +40,14 @@ public class ProductController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult> Get(int id)
     {
-        var result = await _productService.GetAsync(id);
-        if (result == null)
+        try
         {
-            return NotFound();
+            var result = await _productService.GetAsync(id);
+            return Ok(result);
+        } catch (Exception ex)
+        {
+            throw ex;
         }
-
-        return Ok(result);
     }
 
     // dodaj nowy produkt
