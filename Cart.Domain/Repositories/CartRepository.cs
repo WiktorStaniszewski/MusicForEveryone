@@ -1,4 +1,5 @@
 ﻿using Cart.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,24 +36,66 @@ public class CartRepository : ICartRepository
         throw new NotImplementedException();
     }
 
-    public Task<List<OrderItem>> GetAllItemsFromOrderAsync(int orderId)
+    public async Task<List<OrderItem>> GetAllItemsFromOrderAsync(int orderId)
     {
-        throw new NotImplementedException();
+        List<OrderItem> datalist = await _context.OrderItems.ToListAsync();
+        List<OrderItem> output = new List<OrderItem>();
+        foreach (var element in datalist)
+        {
+            if (element.OrderId == orderId)
+            {
+                output.Add(element);
+            }
+        }
+        return output;
+    }
+
+    public async Task<List<OrderItem>> GetItemsByItemIdAsync(int itemId)
+    {
+        List<OrderItem> datalist = await _context.OrderItems.ToListAsync();
+        List<OrderItem> output = new List<OrderItem>();
+        foreach (var element in datalist)
+        {
+            if (element.Id == itemId)
+            {
+                output.Add(element);
+            }
+        }
+        return output;
     }
 
     public async Task<List<Order>> GetAllOrdersAsync()
     {
-        throw new NotImplementedException();
+        return await _context.Orders.ToListAsync();
     }
 
-    public async Task<OrderItem> GetItemFromOrderAsync(int orderId, int itemId)
+    public async Task<OrderItem> GetItemFromOrderAsync(int itemId, int orderId)
     {
-        throw new NotImplementedException();
+        List<OrderItem> allItems = await _context.OrderItems.ToListAsync();
+        List<OrderItem> orderItems = new List<OrderItem>();
+        OrderItem item = new OrderItem();
+        foreach (var element in allItems)
+        {
+            if (element.OrderId == orderId)
+            {
+                orderItems.Add(element);
+            }
+        }
+        foreach(var element in orderItems)
+        {
+            if(element.Id == itemId) item = element;
+        }
+        return item;
     }
 
     public async Task<Order> GetOrderAsync(int id)
     {
-        throw new NotImplementedException();
+        var order = await _context.Orders.Where(x => x.Id == id).FirstOrDefaultAsync();
+        if (order == null)
+        {
+            throw new Exception($"Order with ID {id} not found.");
+        }
+        return order;
     }
 
     public async Task<OrderItem> RemoveItemToOrderAsync(OrderItem item)

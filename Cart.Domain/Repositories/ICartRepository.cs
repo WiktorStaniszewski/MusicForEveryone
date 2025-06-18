@@ -19,6 +19,7 @@ public interface ICartRepository
     #region orderItem
     Task<OrderItem> GetItemFromOrderAsync(int orderId, int itemId);
     Task<List<OrderItem>> GetAllItemsFromOrderAsync(int orderId);
+    Task<List<OrderItem>> GetItemsByItemIdAsync(int itemId);
     Task<OrderItem> AddItemToOrderAsync(OrderItem item);
     Task<OrderItem> RemoveItemToOrderAsync(OrderItem item);
     #endregion

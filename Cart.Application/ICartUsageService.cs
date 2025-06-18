@@ -17,6 +17,7 @@ public interface ICartUsageService
 
     Task<OrderItem> GetItemAsync(int orderId, int itemId);
     Task<List<OrderItem>> GetAllItemsAsync(int orderId);
+    Task<List<OrderItem>> GetItemsByItemId(int itemId);
     Task<OrderItem> AddItemAsync(OrderItem item);
     Task<OrderItem> UpdateItemAsync(OrderItem item);
 }

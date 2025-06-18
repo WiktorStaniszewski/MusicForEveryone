@@ -23,24 +23,34 @@ public class CartUsageService : ICartUsageService
         return result;
     }
 
-    public Task<List<OrderItem>> GetAllItemsAsync(int orderId)
+    public async Task<List<OrderItem>> GetAllItemsAsync(int orderId)
     {
-        throw new NotImplementedException();
+        var result = await _cartRepository.GetAllItemsFromOrderAsync(orderId);
+        return result;
     }
 
-    public Task<List<Order>> GetAllOrdersAsync()
+    public async Task<List<OrderItem>> GetItemsByItemId(int itemId)
     {
-        throw new NotImplementedException();
+        var result = await _cartRepository.GetItemsByItemIdAsync(itemId);
+        return result;
     }
 
-    public Task<OrderItem> GetItemAsync(int orderId, int itemId)
+    public async Task<List<Order>> GetAllOrdersAsync()
     {
-        throw new NotImplementedException();
+        var result = await _cartRepository.GetAllOrdersAsync();
+        return result;
     }
 
-    public Task<Order> GetOrderAsync(int id)
+    public async Task<OrderItem> GetItemAsync(int itemId, int orderId)
     {
-        throw new NotImplementedException();
+        var result = await _cartRepository.GetItemFromOrderAsync(itemId, orderId);
+        return result;
+    }
+
+    public async Task<Order> GetOrderAsync(int id)
+    {
+        var result = await _cartRepository.GetOrderAsync(id);
+        return result;
     }
 
     public Task<OrderItem> UpdateItemAsync(OrderItem item)
