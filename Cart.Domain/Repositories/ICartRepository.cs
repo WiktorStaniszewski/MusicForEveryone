@@ -13,7 +13,7 @@ public interface ICartRepository
     Task<Order> GetOrderAsync(int id);
     Task<List<Order>> GetAllOrdersAsync();
     Task<Order> CreateNewOrderAsync(Order order);
-    Task<Order> DeleteOrderAsync(int id);
+    Task<Order> DeleteOrderAsync(Order order);
     #endregion
 
     #region orderItem

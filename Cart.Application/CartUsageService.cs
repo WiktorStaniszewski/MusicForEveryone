@@ -58,8 +58,15 @@ public class CartUsageService : ICartUsageService
         throw new NotImplementedException();
     }
 
-    public Task<Order> UpdateOrderAsync(int id)
+    public async Task<Order> RemoveOrderAsync(Order order)
     {
-        throw new NotImplementedException();
+        var result = await _cartRepository.DeleteOrderAsync(order);
+        return result;
+    }
+
+    public async Task<OrderItem> DeleteItemAsync(OrderItem item)
+    {
+        var result = await _cartRepository.RemoveItemToOrderAsync(item);
+        return result;
     }
 }

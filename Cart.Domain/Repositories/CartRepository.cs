@@ -31,9 +31,11 @@ public class CartRepository : ICartRepository
         return order;
     }
 
-    public async Task<Order> DeleteOrderAsync(int id)
+    public async Task<Order> DeleteOrderAsync(Order order)
     {
-        throw new NotImplementedException();
+        _context.Orders.Remove(order);
+        await _context.SaveChangesAsync();
+        return order;
     }
 
     public async Task<List<OrderItem>> GetAllItemsFromOrderAsync(int orderId)
@@ -100,6 +102,8 @@ public class CartRepository : ICartRepository
 
     public async Task<OrderItem> RemoveItemToOrderAsync(OrderItem item)
     {
-        throw new NotImplementedException();
+        _context.OrderItems.Remove(item);
+        await _context.SaveChangesAsync();
+        return item;
     }
 }

@@ -147,13 +147,20 @@ namespace CartService.Controllers
 
 
         // DELETE api/<CartController>/5
-        [HttpDelete("cart_{id}")]
-        public void DeleteCart(int id)
+        [HttpDelete("order_{id}")]
+        public async Task<ActionResult> DeleteOrder(int id)
         {
+            var order = await _cartUsageService.GetOrderAsync(id);
+            var result = await _cartUsageService.RemoveOrderAsync(order);
+            return Ok(result);
         }
-        [HttpDelete("order_{order_id}")]
-        public void DeleteOrderItem(int cart_id, int order_id)
+        
+        [HttpDelete("item_{item_id}")]
+        public async Task<ActionResult> DeleteOrderItem(int item_id, int order_id)
         {
+            var item = await _cartUsageService.GetItemAsync(order_id, item_id);
+            var result = await _cartUsageService.DeleteItemAsync(item);
+            return Ok(result);
         }
     }
 }

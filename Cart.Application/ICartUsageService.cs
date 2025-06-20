@@ -12,7 +12,7 @@ public interface ICartUsageService
     Task<Order> GetOrderAsync(int id);
     Task<List<Order>> GetAllOrdersAsync();
     Task<Order> AddOrderAsync(Order order);
-    Task<Order> UpdateOrderAsync(int id);
+    Task<Order> RemoveOrderAsync(Order order);
 
 
     Task<OrderItem> GetItemAsync(int orderId, int itemId);
@@ -20,4 +20,5 @@ public interface ICartUsageService
     Task<List<OrderItem>> GetItemsByItemId(int itemId);
     Task<OrderItem> AddItemAsync(OrderItem item);
     Task<OrderItem> UpdateItemAsync(OrderItem item);
+    Task<OrderItem> DeleteItemAsync(OrderItem item);
 }
