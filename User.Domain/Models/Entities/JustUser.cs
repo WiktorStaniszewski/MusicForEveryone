@@ -18,11 +18,12 @@ public class JustUser
     [Required]
     public string PasswordHash { get; set; }
 
-    public ICollection<Role> Roles { get; set; }
+    public ICollection<Role> Roles { get; set; } = new List<Role>();
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt = DateTime.UtcNow;
 
     public DateTime? LastLoginAt { get; set; }
 
     public bool IsActive { get; set; } = true;
+
 }

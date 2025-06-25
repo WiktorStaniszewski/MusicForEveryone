@@ -3,18 +3,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Cryptography;
-using System.Text;
+using User.Application.Producer;
 using User.Application.Services;
 using User.Domain.Models.JWT;
 using User.Domain.Profiles;
 using User.Domain.Security;
 using User.Domain.Repositories;
+using User.Domain.Seeders;
 
 namespace UserService;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -67,10 +68,16 @@ public class Program
         // Repositories
         builder.Services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestDb"), ServiceLifetime.Transient);
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IRolesRepository, RolesRepository>();
 
         // Automapper   
         builder.Services.AddAutoMapper(typeof(MappingProfile));
 
+        // Seed roles
+        builder.Services.AddScoped<IRoleSeeder, RoleSeeder>();
+
+        // Kafka producer
+        builder.Services.AddScoped<IKafkaProducer, KafkaProducer>();
 
         // JWT configuration here
         var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -79,9 +86,9 @@ public class Program
         builder.Services.AddAuthorization(options =>
         {
             options.AddPolicy("AdminOnly", policy =>
-                policy.RequireRole("Administrator"));
+                policy.RequireRole("Admin"));
             options.AddPolicy("EmployeeOnly", policy =>
-                policy.RequireRole("Employee", "Administrator"));
+                policy.RequireRole("Employee", "Admin"));
         });
         // JWT siê kontynuuje
         builder.Services.AddAuthentication(options =>
@@ -130,6 +137,13 @@ public class Program
             app.UseSwaggerUI();
         }
 
+        // Seed roles and users
+        using (var scope = app.Services.CreateScope())
+        {
+            var roleSeeder = scope.ServiceProvider.GetRequiredService<IRoleSeeder>();
+            await roleSeeder.SeedRole();
+        }
+
         app.UseHttpsRedirection();
 
         app.UseAuthentication();
@@ -137,6 +151,6 @@ public class Program
 
         app.MapControllers();
 
-        app.Run();
+        await app.RunAsync();
     }
 }

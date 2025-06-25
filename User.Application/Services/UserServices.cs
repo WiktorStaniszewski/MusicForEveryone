@@ -4,6 +4,9 @@ using User.Domain.Repositories;
 using User.Domain.Exceptions;
 using Microsoft.IdentityModel.Tokens;
 using User.Domain.Models.Entities;
+using User.Application.Producer;
+using User.Domain.Security;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace User.Application.Services;
 
@@ -11,11 +14,15 @@ public class UserServices : IUserService
 {
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
+    private readonly IPasswordHash _passwordHash;
+    private readonly DataContext _dataContext;
 
-    public UserServices(IMapper mapper, IUserRepository userRepository)
+    public UserServices(IMapper mapper, IUserRepository userRepository, IPasswordHash passwordHash, DataContext dataContext)
     {
         _mapper = mapper;
         _userRepository = userRepository;
+        _passwordHash = passwordHash;
+        _dataContext = dataContext;
     }
 
 
@@ -57,13 +64,14 @@ public class UserServices : IUserService
     }
     public async Task<UserResponseDTO> UpdateUserAsync(UserResponseDTO userDto)
     {
-        var user = _mapper.Map<JustUser>(userDto);
-        var existingUser = await _userRepository.GetUserByIdAsync(user.Id);
+        var existingUser = await _userRepository.GetUserByIdAsync(userDto.Id);
         if (existingUser == null)
         {
             throw new UserDoesntExistsExeption("User with this ID does not exist.");
         }
-        var updatedUser = await _userRepository.UpdateUserAsync(user);
+        _mapper.Map(userDto, existingUser);
+
+        var updatedUser = await _userRepository.UpdateUserAsync(existingUser);
         return _mapper.Map<UserResponseDTO>(updatedUser);
     }
     public async Task<UserResponseDTO> DeleteUserAsync(int id)
@@ -75,5 +83,21 @@ public class UserServices : IUserService
         }
         var deletedUser = await _userRepository.DeleteUserAsync(user);
         return _mapper.Map<UserResponseDTO>(deletedUser);
+    }
+    public async Task<UserResponseDTO> ChangePasswordAsync(int id, string oldPassword, string newPassword)
+    {
+        var user = await _dataContext.Users.FindAsync(id);
+        if (user == null)
+        {
+            throw new UserDoesntExistsExeption();
+        }
+        bool permitChange = _passwordHash.VerifyPassword(oldPassword, user.PasswordHash);
+        if (!permitChange)
+        {
+            throw new NotPermittedToChangeException();
+        }
+        user.PasswordHash = _passwordHash.HashPassword(newPassword);
+        await _dataContext.SaveChangesAsync();
+        return _mapper.Map<UserResponseDTO>(user);
     }
 }

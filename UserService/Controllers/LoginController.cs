@@ -23,11 +23,11 @@ public class LoginController : ControllerBase
 
 
     [HttpPost("Login")]
-    public IActionResult Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         try
         {
-            var token = _loginService.LoginAsync(request.Username, request.Password);
+            var token = await _loginService.LoginAsync(request.Username, request.Password);
             return Ok(new { token });
         }
         catch (InvalidCredentialsException)
@@ -41,11 +41,11 @@ public class LoginController : ControllerBase
     }
 
     [HttpPost("Register")]
-    public IActionResult Register([FromBody] RegisterRequest request)
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         try
         {
-            var token = _registerService.RegisterClient(request.Username, request.Email, request.Password);
+            var token = await _registerService.RegisterClient(request.Username, request.Email, request.Password);
             return Ok(new { token });
         }
         catch (UserExistsExeption ex)

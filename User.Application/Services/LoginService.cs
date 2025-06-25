@@ -24,33 +24,32 @@ public class LoginService : ILoginService
 
     public async Task<string> LoginAsync(string username, string password)
     {
+        /*
         if (username == "admin" && password == "password")
         {
             var adminRoles = new List<string> { "Client", "Employee", "Administrator" };
             var adminToken = _jwtTokenService.GenerateToken(123, adminRoles);
             return adminToken;
         }
+        */        
 
-        else
+        var user = await _userRepository.GetUserByUsernameAsync(username);
+        if (user == null)
         {
-            var user = await _userRepository.GetUserByUsernameAsync(username);
-            if (user == null)
-            {
-                throw new UserDoesntExistsExeption("User with this username does not exist.");
+            throw new UserDoesntExistsExeption("User with this username does not exist.");
 
-            }
-            var isPasswordValid = _passwordHash.VerifyPassword(password, user.PasswordHash);
-            if (!isPasswordValid)
-            {
-                throw new InvalidCredentialsException("Invalid password.");
-            }
-            user.LastLoginAt = DateTime.UtcNow;
-            await _userRepository.UpdateUserAsync(user);
-
-            // For demonstration purposes, we assume the user is an admin with a hardcoded username and password.
-            var roles = new List<string> { "Client" };
-            var token = _jwtTokenService.GenerateToken(user.Id, roles);
-            return token;
         }
+        var isPasswordValid = _passwordHash.VerifyPassword(password, user.PasswordHash);
+        if (!isPasswordValid)
+        {
+            throw new InvalidCredentialsException("Invalid password.");
+        }
+        user.LastLoginAt = DateTime.UtcNow;
+        await _userRepository.UpdateUserAsync(user);
+
+        var roles = user.Roles.Select(r => r.Name).ToList();
+        var token = _jwtTokenService.GenerateToken(user.Id, roles);
+        return token;
+        
     }
 }

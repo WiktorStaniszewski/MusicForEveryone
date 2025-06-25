@@ -5,6 +5,7 @@ using System.Security.Claims;
 using User.Application.Services;
 using User.Domain.Exceptions;
 using User.Domain.Models.Entities;
+using User.Domain.Models.Requests;
 using User.Domain.Models.Response;
 
 namespace UserService.Controllers;
@@ -124,6 +125,26 @@ public class UserController : ControllerBase
         catch (UserDoesntExistsExeption ex)
         {
             return NotFound(ex.Message);
+        }
+    }
+
+    [HttpPatch("Password-reset")]
+    [Authorize]
+    [Authorize(Policy = "EmployeeOnly")]
+    public async Task<IActionResult> ResetPassword([FromBody] PasswordChangeRequest pcr, string newPassword)
+    {
+        try
+        {
+            var result = await _userService.ChangePasswordAsync(pcr.UserId, pcr.OldPassword, newPassword);
+            return Ok("Password changed successfully.");
+        }
+        catch (NotPermittedToChangeException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (UserDoesntExistsExeption ex)
+        {
+            return BadRequest(ex.Message);
         }
     }
 }
